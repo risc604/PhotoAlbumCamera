@@ -10,11 +10,12 @@
         android:id="@+id/imageView"
         android:layout_width="383dp"
         android:layout_height="579dp"
-        app:srcCompat="@android:drawable/ic_menu_camera"
         android:contentDescription=""
+        android:onClick="imgOnClick"
+        app:srcCompat="@android:drawable/ic_menu_camera"
         tools:ignore="ContentDescription,MissingConstraints"
-        tools:layout_editor_absoluteY="0dp"
-        tools:layout_editor_absoluteX="0dp" />
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
 
     <TextView
         android:id="@+id/textView"
