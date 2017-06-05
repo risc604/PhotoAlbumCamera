@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -19,6 +20,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.w3c.dom.Text;
+
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Random;
 
 import static android.media.MediaRecorder.VideoSource.CAMERA;
 
@@ -54,6 +59,26 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         Log.d(TAG, "onActivityResult()...");
+        if (data != null)
+        {
+            switch (requestCode)
+            {
+                case CAMERA:
+                    getCameraData(data);
+                    break;
+
+                case PHOTO:
+                    getAlbumPhoto(data);
+                    break;
+
+                case REQUEST_CAMERA:
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -87,20 +112,23 @@ public class MainActivity extends AppCompatActivity
 
     public void imgOnClick(View view)
     {
-        CharSequence[]    items = {"相 機", "相 簿"};
-        AlertDialog adBuilder = new AlertDialog.Builder(this).
+        final CharSequence[]    items = {"相 機", "相 簿"};
+        AlertDialog adBuilder = new AlertDialog.Builder(this).setTitle("相 片").
                 setItems(items, new DialogInterface.OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
+                        //TextView t_view = (TextView) findViewById(android.R.id.title);
+                        //t_view.setTextSize(50);
                         switch (which)
                         {
                             case 0:
                                 ContentValues values = new ContentValues();
                                 values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
                                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                                intent.putExtra(MediaStore.EXTRA_OUTPUT, Environment.getDataDirectory().getAbsolutePath());
+                                intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                                        Environment.getDataDirectory().getAbsolutePath());
                                 startActivityForResult(intent, CAMERA);
                                 break;
                             case 1:
@@ -112,7 +140,8 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
                 }).create();
-                adBuilder.show();
+        adBuilder.show();
+
     }
 
 
@@ -133,6 +162,34 @@ public class MainActivity extends AppCompatActivity
                         Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 this.REQUEST_CAMERA);
+    }
+
+    private void getCameraData(Intent data)
+    {
+        Bitmap  bitmap;
+        java.util.Date      date = new java.util.Date();
+        SimpleDateFormat    sdFormat = new SimpleDateFormat("yyyyMMddhhmmss");
+        String strDate = sdFormat.format(date);
+        Random ran = new Random();
+        try
+        {
+            String fileName = ran.nextInt(42) + strDate + ".jpg";
+            bitmap = (Bitmap)data.getExtras().get("data");
+            FileOutputStream out = this.openFileOutput(fileName, MODE_PRIVATE);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+
+            Log.w(TAG, "file name: " + fileName);
+            imgView.setImageBitmap(bitmap);
+        }
+        catch (Exception e)
+        {
+
+        }
+    }
+
+    private void getAlbumPhoto(Intent data)
+    {
+
     }
 
 }
