@@ -87,34 +87,32 @@ public class MainActivity extends AppCompatActivity
 
     public void imgOnClick(View view)
     {
-        AlertDialog.Builder adBuilder = new AlertDialog.Builder(this);
-        adBuilder.setMessage("照片選取")
-          .setPositiveButton("相 機", new DialogInterface.OnClickListener()
-          {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                ContentValues   values = new ContentValues();
-                values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Environment.getDataDirectory().getAbsolutePath());
-                startActivityForResult(intent, CAMERA);
-            }
-        }).setNegativeButton("相 簿", new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent, PHOTO);
-
-            }
-        });
-        AlertDialog logout_dialog = adBuilder.create();
-        logout_dialog.show();
+        CharSequence[]    items = {"相 機", "相 簿"};
+        AlertDialog adBuilder = new AlertDialog.Builder(this).
+                setItems(items, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        switch (which)
+                        {
+                            case 0:
+                                ContentValues values = new ContentValues();
+                                values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                                intent.putExtra(MediaStore.EXTRA_OUTPUT, Environment.getDataDirectory().getAbsolutePath());
+                                startActivityForResult(intent, CAMERA);
+                                break;
+                            case 1:
+                                intent = new Intent();
+                                intent.setType("image/*");
+                                intent.setAction(Intent.ACTION_GET_CONTENT);
+                                startActivityForResult(intent, PHOTO);
+                                break;
+                        }
+                    }
+                }).create();
+                adBuilder.show();
     }
 
 
